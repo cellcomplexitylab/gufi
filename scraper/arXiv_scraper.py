@@ -280,7 +280,6 @@ if __name__ == "__main__":
     output = scraper.scrape()
     df = get_df_of_output(output)
     df.to_csv(
-        f'{category.replace(' ', '_').replace(':', '_')}_'+
-        f'{from_}_{to_}.csv', index=False
+        f"{category.replace(' ', '_').replace(':', '_')}_"+
+        f"{from_}_{to_}.csv", index=False
         )
-    
