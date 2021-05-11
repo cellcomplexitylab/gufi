@@ -242,3 +242,45 @@ subcats = {'cond-mat': ['cond-mat.dis-nn', 'cond-mat.mtrl-sci', 'cond-mat.mes-ha
  'hep-lat': [],'astro-ph': ['astro-ph.GA',
               'astro-ph.CO', 'astro-ph.EP', 'astro-ph.HE', 'astro-ph.IM', 'astro-ph.SR']
  }
+
+
+def get_df_of_output(output):
+    cols = (
+        'id', 'title', 'categories',
+        'abstract', 'doi', 'created',
+         'updated', 'authors'
+         )
+    df = pd.DataFrame(output,columns=cols)
+    return df
+
+if __name__ == "__main__":
+    import argparse
+    import pandas as pd
+    from datetime import date
+    parser = argparse.ArgumentParser()
+    parser.add_argument("category")
+    parser.add_argument("from_")
+    parser.add_argument("to_", 
+        default=str(date.today().strftime("%Y-%m-%d"))
+        )
+    
+    args = parser.parse_args()
+
+    category = args.category
+    from_ = args.from_
+    to_ = args.to_
+
+    # initialize the scraper
+    scraper = Scraper(
+        category=category,
+        date_from=from_,
+        date_until=to_
+        )
+    # scrape
+    output = scraper.scrape()
+    df = get_df_of_output(output)
+    df.to_csv(
+        f'{category.replace(' ', '_').replace(':', '_')}_'+
+        f'{from_}_{to_}.csv', index=False
+        )
+    
