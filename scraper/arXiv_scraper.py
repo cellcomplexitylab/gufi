@@ -260,9 +260,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("category")
     parser.add_argument("from_")
-    parser.add_argument("to_", 
-        default=str(date.today().strftime("%Y-%m-%d"))
-        )
+    parser.add_argument("to_")
     
     args = parser.parse_args()
 
