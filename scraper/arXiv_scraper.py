@@ -1,7 +1,10 @@
 from __future__ import print_function
 import xml.etree.ElementTree as ET
 import datetime
+import argparse
+import pandas as pd
 import time
+import os
 import sys
 PYTHON3 = sys.version_info[0] == 3
 if PYTHON3:
@@ -21,6 +24,7 @@ class Record(object):
     Each records contains the following properties:
 
     object should be of xml.etree.ElementTree.Element.
+    source: https://github.com/Mahdisadjadi/arxivscraper/
     """
 
     def __init__(self, xml_record):
@@ -108,15 +112,7 @@ class Scraper(object):
         A dictionary where keys are used to limit the saved results. Possible keys:
         subcats, author, title, abstract. See the example, below.
 
-    Example:
-    Returning all eprints from
-
-    ```
-        import arxivscraper.arxivscraper as ax
-        scraper = ax.Scraper(category='stat',date_from='2017-12-23',date_until='2017-12-25',t=10,
-                 filters={'affiliation':['facebook'],'abstract':['learning']})
-        output = scraper.scrape()
-    ```
+    source: https://github.com/Mahdisadjadi/arxivscraper/
     """
 
     def __init__(self, category, date_from=None, date_until=None, t=30, timeout=300, filters={}):
@@ -132,7 +128,10 @@ class Scraper(object):
             self.u = str(DateToday)
         else:
             self.u = date_until
+
+
         self.url = BASE + 'from=' + self.f + '&until=' + self.u + '&metadataPrefix=arXiv&set=%s' % self.cat
+
         self.filters = filters
         if not self.filters:
             self.append_all = True
@@ -253,31 +252,90 @@ def get_df_of_output(output):
     df = pd.DataFrame(output,columns=cols)
     return df
 
-if __name__ == "__main__":
-    import argparse
-    import pandas as pd
-    from datetime import date
-    parser = argparse.ArgumentParser()
-    parser.add_argument("category")
-    parser.add_argument("from_")
-    parser.add_argument("to_")
-    
+
+def arg_parse():
+    parser = argparse.ArgumentParser(description='Input Variables')
+    parser.add_argument(
+        "--category", "-c",
+        required=True,
+        help="(categories) astro-ph, cond-mat, gr-qc, hep-ex, hep-lat, hep-ph, hep-th, math-ph, nlin, nucl-ex, physics, quant-ph, math, CoRR, q-bio, q-fin, stat"
+    )
+    parser.add_argument(
+        "--sub_categories", "-s",
+        required=False,
+        default='',
+        help = "(check markdown for detailed sub_category, ex: for q-bio category) [bm,CB,gn,MN,NC]"
+    )
+    parser.add_argument(
+        "--keywords", "-k",
+        required=False,
+        default=None,
+        help="(keywords to be looked for in abstract or title) [lmn,abc,xyz]"
+    )
+    parser.add_argument(
+        "--from_", "-f",
+        required=True,
+        help="(Date to look for records from of format YYYY-MM-DD) 2000-01-01"
+    )
+    parser.add_argument(
+        "--to_", "-t",
+        required=False,
+        default=None,
+        help="(Date till which to look for records YYYY-MM-DD) [2020-01-01]"
+    )
+    parser.add_argument(
+        "--output_dir", "-o",
+        required=False,
+        default='.',
+        help="(direcotry to save the final results in, must exist) [./abc]"
+    )
     args = parser.parse_args()
+    return args.category, args.sub_categories, args.keywords, args.from_, args.to_, args.output_dir
 
-    category = args.category
-    from_ = args.from_
-    to_ = args.to_
-
-    # initialize the scraper
+if __name__ == "__main__":
+    category, sub_categories, keywords, from_, to_, output_dir = arg_parse()
+    
+    # initialize the scraper with filters with sub-category information
+    filters = {}
+    if sub_categories != '':
+        categories = [f'{category.lower}.{sub_category.lower()}' for sub_cat in sub_categories.split(',')]
+        filters['categories']=categories
+    if keywords != None:
+        filters['abstract'] = keywords.split(',')
+        filters['title'] = keywords.split(',')
+    
     scraper = Scraper(
         category=category,
         date_from=from_,
-        date_until=to_
+        date_until=to_,
+        filters=filters
         )
+
     # scrape
     output = scraper.scrape()
     df = get_df_of_output(output)
-    df.to_csv(
-        f"{category.replace(' ', '_').replace(':', '_')}_"+
-        f"{from_}_{to_}.csv", index=False
-        )
+    # saving the output
+    if sub_categories != '' and keywords is None:
+        df.to_csv(
+            os.path.join(output_dir,
+            f"{category}_{sub_categories.replace(',','_')}_"+
+            f"{from_}_{to_}.csv"), index=False
+            )
+    elif sub_categories == '' and keywords is not None:
+        df.to_csv(
+            os.path.join(output_dir,
+            f"{category}_{keywords.replace(',','_')}_"+
+            f"{from_}_{to_}.csv"), index=False
+            )
+    elif sub_categories != '' and keywords is not None:
+        df.to_csv(
+            os.path.join(output_dir,
+            f"{category}_{sub_categories.replace(',','_')}_{keywords.replace(',','_')}_"+
+            f"{from_}_{to_}.csv"), index=False
+            )
+    else:
+        df.to_csv(
+            os.path.join(output_dir,
+            f"{category}_"+
+            f"{from_}_{to_}.csv"), index=False
+            )
