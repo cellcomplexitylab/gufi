@@ -298,7 +298,7 @@ if __name__ == "__main__":
     # initialize the scraper with filters with sub-category information
     filters = {}
     if sub_categories != '':
-        categories = [f'{category.lower}.{sub_category.lower()}' for sub_cat in sub_categories.split(',')]
+        categories = [f'{category.lower}.{sub_cat.lower()}' for sub_cat in sub_categories.split(',')]
         filters['categories']=categories
     if keywords != None:
         filters['abstract'] = keywords.split(',')
