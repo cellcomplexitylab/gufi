@@ -247,9 +247,9 @@ def get_df_of_output(output):
     cols = (
         'id', 'title', 'categories',
         'abstract', 'doi', 'created',
-         'updated', 'authors'
+        'updated', 'authors'
          )
-    df = pd.DataFrame(output,columns=cols)
+    df = pd.DataFrame(output, columns=cols)
     return df
 
 
@@ -299,7 +299,7 @@ if __name__ == "__main__":
     filters = {}
     if sub_categories != '':
         categories = [f'{category.lower}.{sub_cat.lower()}' for sub_cat in sub_categories.split(',')]
-        filters['categories']=categories
+        filters['categories'] = categories
     if keywords != None:
         filters['abstract'] = keywords.split(',')
         filters['title'] = keywords.split(',')
