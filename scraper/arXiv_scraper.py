@@ -313,6 +313,7 @@ if __name__ == "__main__":
 
     # scrape
     output = scraper.scrape()
+    # FIXME: check if output is 1 (no hit) otherwise next line fails.
     df = get_df_of_output(output)
     # saving the output
     if sub_categories != '' and keywords is None:
