@@ -295,6 +295,10 @@ def arg_parse():
 if __name__ == "__main__":
     category, sub_categories, keywords, from_, to_, output_dir = arg_parse()
     
+    # TODO: remove failsafe when the script works with more categories.
+    if category not in frozenset(['math', 'physics', 'q-fin', 'q-bio', 'stat']):
+        raise Exception('category must be math, physics, q-fin, q-bio or stat')
+    
     # initialize the scraper with filters with sub-category information
     filters = {}
     if sub_categories != '':
