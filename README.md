@@ -1,7 +1,7 @@
 # goofy
 
-Anaconda is used for this repo, install anaconda depending on your OS and then to create the environment with requirements run.
+Python is used for this repository, to make sure that all the modules are installed for the code in this repo to run, please run the following.
 
 ```bash
-	conda env create -f env.yml
+	pip install requirements.txt
 ```
