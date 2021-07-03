@@ -8,7 +8,6 @@ import os.path as osp
 import pandas as pd
 from preprocess.tokenizer.bert_tokenizer import TitleCategoryDataset
 from preprocess.bert_flow import BertFlow, TitleCategoryModule
-from preprocess.clean_csv import Cleanser
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 import seaborn as sns
