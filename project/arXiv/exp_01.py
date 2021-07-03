@@ -19,7 +19,7 @@ from tqdm import tqdm
 
 
 class Exp01:
-    def __init__(self, data_loc, model_loc):
+    def __init__(self, data_loc, model_loc, n_epochs, batch_sz, GPUs):
         self.data_loc = data_loc
         self.model_loc = model_loc
 
@@ -31,10 +31,10 @@ class Exp01:
         self.major_topics = ['math', 'stat', 'physics', 'q-bio', 'q-fin']
         self.x_col = "title"
         self.tokenizer_name = "bert-base-uncased"
-        self.N_EPOCHS = 1
-        self.BATCH_SIZE = 1
+        self.N_EPOCHS = n_epochs
+        self.BATCH_SIZE = batch_sz
         self.P_threshold = 0.5
-        self.GPUs = 0
+        self.GPUs = gpus
 
     def split_df(self):
         flow = BertFlow(self.data_loc, x_col=self.x_col, label_columns=self.major_topics)
@@ -162,18 +162,39 @@ def arg_parse():
         required=False,
         help="directory to save the output in"
     )
+    parser.add_argument(
+        "--epochs",
+        required=False,
+        default=20,
+        help="directory to save the output in"
+    )
+    parser.add_argument(
+        "--batch_sz",
+        required=False,
+        default=16,
+        help="batch size for training and testing"
+    )
+    parser.add_argument(
+        "--gpus",
+        required=False,
+        default=1,
+        help="# of GPUs"
+    )
     args = parser.parse_args()
     return (
         args.data_loc,
         args.model_loc,
+        args.epochs,
+        args.batch_sz,
+        args.gpus
     )
 
 
 if __name__ == "__main__":
-    data_loc, model_loc = arg_parse()
+    data_loc, model_loc, n_epochs, batch_sz, gpus = arg_parse()
 
     # exp
-    exp = Exp01(data_loc, model_loc)
+    exp = Exp01(data_loc, model_loc, int(n_epochs), int(batch_sz), int(gpus))
     exp.split_df()
     exp.load_dataset()
     exp.load_module()

@@ -12,7 +12,7 @@ jobs:
         run: |
           # Your ML workflow goes here
           pip3 install -r requirements.txt
-          python3 -m project.arXiv.exp_01 -i . -o .
+          python3 -m project.arXiv.exp_01 -i . -o . --epochs 1 --batch_sz 1 --gpus 0
           echo "## Pipe 1" > report.md
           echo "BERT model-1 pipeline validated" > report.md
           cml-send-comment report.md
