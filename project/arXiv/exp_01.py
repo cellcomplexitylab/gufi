@@ -19,7 +19,7 @@ from tqdm import tqdm
 
 
 class Exp01:
-    def __init__(self, data_loc, model_loc, n_epochs, batch_sz, GPUs):
+    def __init__(self, data_loc, model_loc, n_epochs, batch_sz, gpus):
         self.data_loc = data_loc
         self.model_loc = model_loc
 
@@ -178,7 +178,7 @@ def arg_parse():
         "--gpus",
         required=False,
         default=1,
-        help="# of GPUs"
+        help="number of GPUs"
     )
     args = parser.parse_args()
     return (
@@ -191,10 +191,10 @@ def arg_parse():
 
 
 if __name__ == "__main__":
-    data_loc, model_loc, n_epochs, batch_sz, gpus = arg_parse()
+    data_loc, model_loc, epochs, batch_sz, gpus = arg_parse()
 
     # exp
-    exp = Exp01(data_loc, model_loc, int(n_epochs), int(batch_sz), int(gpus))
+    exp = Exp01(data_loc, model_loc, int(epochs), int(batch_sz), int(gpus))
     exp.split_df()
     exp.load_dataset()
     exp.load_module()
